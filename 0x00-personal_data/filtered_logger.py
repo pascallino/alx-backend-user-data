@@ -4,6 +4,11 @@ filter_datum that returns the log message obfuscated:"""
 import re
 from typing import List
 import logging
+import os
+# import mysql.connector
+
+
+PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 
 
 def filter_datum(fields: List[str], redaction: str,
@@ -39,3 +44,20 @@ class RedactingFormatter(logging.Formatter):
         redacted = filter_datum(self.fields, self.REDACTION,
                                 message, self.SEPARATOR)
         return redacted
+
+
+def get_logger() -> logging.Logger:
+    """
+    Return a logging.Logger object
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    handler = logging.StreamHandler()
+
+    formatter = RedactingFormatter(PII_FIELDS)
+
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
