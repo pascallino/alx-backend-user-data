@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+"""
+Definition of Base class Auth
+"""
 from flask import request
 from typing import List, TypeVar
 

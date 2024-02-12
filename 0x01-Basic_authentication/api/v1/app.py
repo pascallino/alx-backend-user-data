@@ -18,6 +18,9 @@ auth = None
 if os.getenv('AUTH_TYPE') == 'auth':
     from api.v1.auth.auth import Auth
     auth = Auth()
+elif os.getenv('AUTH_TYPE') == "basic_auth":
+    from api.v1.auth.basic_auth import BasicAuth
+    auth = BasicAuth()
 
 
 # Define a list of paths that don't require authentication
@@ -30,8 +33,9 @@ def before_request():
     if auth is None:
         pass
     else:
-        excluded_paths =
-        ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
+        excluded_paths = ['/api/v1/status/',
+                          '/api/v1/unauthorized/',
+                          '/api/v1/forbidden/']
 
     # Check if the path is not part of the excluded paths
     if auth.require_auth(request.path, excluded_paths):
