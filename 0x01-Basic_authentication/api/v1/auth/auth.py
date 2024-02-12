@@ -7,6 +7,8 @@ class Auth:
         """Check if authentication is required for the given path."""
         if path is None or excluded_paths is None or not excluded_paths:
             return True
+        if excluded_paths == []:
+            return True
 
         if not path.endswith('/'):
             path = path + '/'
