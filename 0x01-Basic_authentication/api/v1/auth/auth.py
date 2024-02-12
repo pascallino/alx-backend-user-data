@@ -24,7 +24,12 @@ class Auth:
 
     def authorization_header(self, request=None) -> str:
         """Extract the Authorization header from the request."""
-        return None  # Placeholder implementation, to be expanded later
+        if request is None:
+            return None
+        header = request.headers.get('Authorization')
+        if header is None:
+            return None
+        return header  # Placeholder implementation, to be expanded later
 
     def current_user(self, request=None) -> TypeVar('User'):
         """Retrieve the current user from the request."""
