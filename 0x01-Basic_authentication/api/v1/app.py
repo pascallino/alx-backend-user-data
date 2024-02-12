@@ -12,42 +12,34 @@ import os
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
-
-# Create an instance of Auth based on AUTH_TYPE environment variable
 auth = None
-if os.getenv('AUTH_TYPE') == 'auth':
+AUTH_TYPE = os.getenv("AUTH_TYPE")
+if AUTH_TYPE == "auth":
     from api.v1.auth.auth import Auth
     auth = Auth()
-elif os.getenv('AUTH_TYPE') == "basic_auth":
+elif AUTH_TYPE == "basic_auth":
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
 
 
-# Define a list of paths that don't require authentication
-# Define the before_request method to handle filtering before each request
 @app.before_request
-def before_request():
-    """Define the before_request method to handle filtering
-    before each request"""
-
+def bef_req():
+    """
+    Filter each request before it's handled by the proper route
+    """
     if auth is None:
         pass
     else:
-        excluded_paths = ['/api/v1/status/',
-                          '/api/v1/unauthorized/',
-                          '/api/v1/forbidden/']
-
-    # Check if the path is not part of the excluded paths
-    if auth.require_auth(request.path, excluded_paths):
-        # Check if Authorization header is present
-        auth_header = auth.authorization_header(request)
-        if auth_header is None:
-            abort(401, description="Unauthorized")
-
-        # Check if current_user returns a user
-        current_user = auth.current_user(request)
-        if current_user is None:
-            abort(403, description="Forbidden")
+        excluded = [
+            '/api/v1/status/',
+            '/api/v1/unauthorized/',
+            '/api/v1/forbidden/'
+        ]
+        if auth.require_auth(request.path, excluded):
+            if auth.authorization_header(request) is None:
+                abort(401, description="Unauthorized")
+            if auth.current_user(request) is None:
+                abort(403, description="Forbidden")
 
 
 @app.errorhandler(404)
