@@ -3,7 +3,6 @@
 """
 import os
 from flask import jsonify, request
-from flask import Flask, jsonify, abort, request
 from api.v1.views import app_views
 from models.user import User
 
@@ -32,8 +31,7 @@ def auth_session():
             session_name = os.getenv('SESSION_NAME')
             resp.set_cookie(session_name, session_id)
             return resp
-        else:
-            return jsonify({"error": "wrong password"}), 401
+    return jsonify({"error": "wrong password"}), 401
 
 
 @app_views.route('/auth_session/logout', methods=['DELETE'],
