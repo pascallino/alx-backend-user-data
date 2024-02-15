@@ -3,44 +3,45 @@
 Definition of class SessionAuth
 """
 import base64
-from uuid import uuid4
-from typing import TypeVar
-
 from .auth import Auth
+from typing import TypeVar
+from uuid import uuid4
+
 from models.user import User
 
 
 class SessionAuth(Auth):
-    """ Implement Session Authorization protocol methods
+    """ Implement new session authentication mechanism:
+    Authorization protocol methods
     """
     user_id_by_session_id = {}
 
     def create_session(self, user_id: str = None) -> str:
-        """
-        Creates a Session ID for a user with id user_id
-        Args:
-            user_id (str): user's user id
-        Return:
-            None is user_id is None or not a string
-            Session ID in string format
-        """
+        """ Create the session using uuid4
+        where key is the uuid and value is the user_id"""
+        # Return None if user_id is None or not a string
         if user_id is None or not isinstance(user_id, str):
             return None
-        id = uuid4()
-        self.user_id_by_session_id[str(id)] = user_id
-        return str(id)
+
+        # Generate Session ID using uuid4()
+        session_id = str(uuid4())
+
+        # Store the Session ID and user_id in the class attribute dictionary
+        self.user_id_by_session_id[session_id] = user_id
+
+        # Return the Session ID
+        return session_id
 
     def user_id_for_session_id(self, session_id: str = None) -> str:
-        """
-        Returns a user ID based on a session ID
-        Args:
-            session_id (str): session ID
-        Return:
-            user id or None if session_id is None or not a string
-        """
+        """ Return None if session_id is None or not a string """
         if session_id is None or not isinstance(session_id, str):
             return None
-        return self.user_id_by_session_id.get(session_id)
+
+        # Retrieve the User ID based on the Session ID using .get() method
+        user_id = self.user_id_by_session_id.get(session_id)
+
+        # Return the User ID
+        return user_id
 
     def current_user(self, request=None):
         """
